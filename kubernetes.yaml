@@ -10,7 +10,7 @@ Resources:
     Type: 'AWS::EKS::Cluster'
     Properties:
       Name: !Sub '${VPCStackName}-EKS'
-      RoleArn: !Ref EKSClusterRole
+      RoleArn: !GetAtt EKSClusterRole.Arn
       ResourcesVpcConfig:
         SecurityGroupIds:
           - !Ref EKSSecurityGroupId
