@@ -40,7 +40,8 @@ aws cloudformation update-stack \
   --stack-name BankCoreCluster \
   --template-body file://kubernetes.yaml \
   --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork \
-  --capabilities CAPABILITY_NAMED_IAM
+  --capabilities CAPABILITY_NAMED_IAM \
+  --disable-rollback
 ```
 
 
