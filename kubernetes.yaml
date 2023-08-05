@@ -4,6 +4,12 @@ Parameters:
     Type: String
     Description: Name of the VPC stack
     Default: BankCoreNetwork
+  NodeCapacityType:
+    Type: String
+    AllowedValues:
+      - ON_DEMAND
+      - SPOT
+    Default: ON_DEMAND
 
 Resources:
   EKSCluster:
@@ -26,7 +32,7 @@ Resources:
       ClusterName: !Ref EKSCluster
       NodegroupName: !Sub '${AWS::StackName}-NodeGroup1'
       NodeRole: !GetAtt EKSNodegroupRole.Arn
-      CapacityType: SPOT
+      CapacityType: !Ref NodeCapacityType
       ScalingConfig:
         MinSize: 1
         MaxSize: 5
