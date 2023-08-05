@@ -31,7 +31,7 @@ Resources:
   EKSClusterRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Sub '${VPCStackName}-EKSRole'
+      RoleName: !Sub '${AWS::StackName}-EKSRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -41,4 +41,3 @@ Resources:
             Action: 'sts:AssumeRole'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
-        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
