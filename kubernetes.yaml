@@ -9,7 +9,7 @@ Resources:
   EKSCluster:
     Type: 'AWS::EKS::Cluster'
     Properties:
-      Name: !Sub '${VPCStackName}-EKS'
+      Name: !Sub '${AWS::StackName}-EKS'
       RoleArn: !GetAtt EKSClusterRole.Arn
       ResourcesVpcConfig:
         SecurityGroupIds:
@@ -20,10 +20,32 @@ Resources:
             - Fn::ImportValue:
                 !Sub '${VPCStackName}-PrivateSubnetIds'
 
+  NodeGroup1:
+    Type: 'AWS::EKS::Nodegroup'
+    Properties:
+      ClusterName: !Ref EKSCluster
+      NodegroupName: !Sub '${AWS::StackName}-NodeGroup1'
+      NodeRole: !GetAtt EKSNodegroupRole.Arn
+      CapacityType: SPOT
+      ScalingConfig:
+        MinSize: 1
+        MaxSize: 5
+        DesiredSize: 2
+      Subnets:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue:
+              !Sub '${VPCStackName}-PrivateSubnetIds'
+      InstanceTypes:
+        - t3.large
+        - t3.xlarge
+        - c5.large
+        - c5.xlarge
+
   EKSSecurityGroupId:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: EKS Security Group
+      GroupDescription: !Sub '${AWS::StackName} Control Plane Security Group'
       VpcId:
         Fn::ImportValue:
           !Sub '${VPCStackName}-VPCId'
@@ -31,7 +53,7 @@ Resources:
   EKSClusterRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Sub '${AWS::StackName}-EKSRole'
+      RoleName: !Sub '${AWS::StackName}-EKSClusterRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -41,3 +63,18 @@ Resources:
             Action: 'sts:AssumeRole'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  EKSNodegroupRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-EKSNodeRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly

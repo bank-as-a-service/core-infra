@@ -4,6 +4,11 @@ Cloudformation script for the one and only kubernetes runtime
 ## Pre-requisites
 - AWS CLI
 
+## Connecting to the Kubernetes API
+```shell
+aws eks --region us-west-2 update-kubeconfig --name BankCoreCluster-EKS
+```
+
 ## How to deploy
 - create network layer
 ```shell
