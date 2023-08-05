@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  Region:
+    Description: AWS Region for resources
+    Type: String
+    Default: us-west-2
+  AvailabilityZone1:
+    Description: First Availability Zone for subnets
+    Type: String
+  AvailabilityZone2:
+    Description: Second Availability Zone for subnets
+    Type: String
+  AvailabilityZone3:
+    Description: Third Availability Zone for subnets
+    Type: String
+
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+  PublicSubnet1a:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.1.0/24'
+      AvailabilityZone: !Ref AvailabilityZone1
+      MapPublicIpOnLaunch: true
+  PublicSubnet1b:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.2.0/24'
+      AvailabilityZone: !Ref AvailabilityZone2
+      MapPublicIpOnLaunch: true
+  PublicSubnet1c:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.3.0/24'
+      AvailabilityZone: !Ref AvailabilityZone3
+      MapPublicIpOnLaunch: true
+  PrivateSubnet1a:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.4.0/24'
+      AvailabilityZone: !Ref AvailabilityZone1
+  PrivateSubnet1b:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.5.0/24'
+      AvailabilityZone: !Ref AvailabilityZone2
+  PrivateSubnet1c:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.6.0/24'
+      AvailabilityZone: !Ref AvailabilityZone3
+
+Outputs:
+  VPCId:
+    Description: ID of the VPC
+    Export:
+      Name: !Sub '${AWS::StackName}-VPCId'
+    Value: !Ref VPC
+  PublicSubnetIds:
+    Description: IDs of the public subnets
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnetIds'
+    Value:
+      Fn::Join:
+        - ','
+        - - !Ref PublicSubnet1a
+          - !Ref PublicSubnet1b
+          - !Ref PublicSubnet1c
+  PrivateSubnetIds:
+    Description: IDs of the private subnets
+    Export:
+      Name: !Sub '${AWS::StackName}-PrivateSubnetIds'
+    Value:
+      Fn::Join:
+        - ','
+        - - !Ref PrivateSubnet1a
+          - !Ref PrivateSubnet1b
+          - !Ref PrivateSubnet1c

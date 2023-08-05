@@ -1,2 +1,59 @@
 # core-infra
 Cloudformation script for the one and only kubernetes runtime
+
+## Pre-requisites
+- AWS CLI
+
+## How to deploy
+- create network layer
+```shell
+aws cloudformation create-stack \
+  --region us-west-2 \
+  --stack-name BankCoreNetwork \
+  --template-body file://network.yaml \
+  --parameters ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a ParameterKey=AvailabilityZone2,ParameterValue=us-west-2b ParameterKey=AvailabilityZone3,ParameterValue=us-west-2c
+```
+
+- create kubernetes layer
+```shell
+aws cloudformation create-stack \
+  --region us-west-2 \
+  --stack-name BankCoreCluster \
+  --template-body file://kubernetes.yaml \
+  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork \
+  --capabilities CAPABILITY_NAMED_IAM
+```
+
+## How to update
+- update network layer
+```shell
+aws cloudformation update-stack \
+  --region us-west-2 \
+  --stack-name BankCoreNetwork \
+  --template-body file://network.yaml \
+  --parameters ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a ParameterKey=AvailabilityZone2,ParameterValue=us-west-2b ParameterKey=AvailabilityZone3,ParameterValue=us-west-2c
+```
+- update kubernetes layer
+```shell
+aws cloudformation update-stack \
+  --region us-west-2 \
+  --stack-name BankCoreCluster \
+  --template-body file://kubernetes.yaml \
+  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork \
+  --capabilities CAPABILITY_NAMED_IAM
+```
+
+
+## How to delete
+- delete kubernetes layer
+```shell
+aws cloudformation delete-stack \
+  --region us-west-2 \
+  --stack-name BankCoreCluster
+```
+- delete network layer
+```shell
+aws cloudformation delete-stack \
+  --region us-west-2 \
+  --stack-name BankCoreNetwork
+```

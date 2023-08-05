@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  VPCStackName:
+    Type: String
+    Description: Name of the VPC stack
+    Default: BankCoreNetwork
+
+Resources:
+  EKSCluster:
+    Type: 'AWS::EKS::Cluster'
+    Properties:
+      Name: !Sub '${VPCStackName}-EKS'
+      RoleArn: !Ref EKSClusterRole
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !Ref EKSSecurityGroupId
+        SubnetIds:
+          Fn::Split:
+            - ','
+            - Fn::ImportValue:
+                !Sub '${VPCStackName}-PrivateSubnetIds'
+
+  EKSSecurityGroupId:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: EKS Security Group
+      VpcId:
+        Fn::ImportValue:
+          !Sub '${VPCStackName}-VPCId'
+
+  EKSClusterRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${VPCStackName}-EKSRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: eks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
