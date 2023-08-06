@@ -9,7 +9,7 @@ Parameters:
     AllowedValues:
       - ON_DEMAND
       - SPOT
-    Default: ON_DEMAND
+    Default: SPOT
 
 Resources:
   EKSCluster:
