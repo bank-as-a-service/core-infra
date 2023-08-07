@@ -20,7 +20,7 @@ Resources:
     Properties:
       CidrBlock: '10.0.0.0/16'
 
-  PublicSubnet1a:
+  PublicSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
@@ -28,7 +28,7 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone1
       MapPublicIpOnLaunch: true
 
-  PublicSubnet1b:
+  PublicSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
@@ -36,7 +36,7 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone2
       MapPublicIpOnLaunch: true
 
-  PublicSubnet1c:
+  PublicSubnet3:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
@@ -44,21 +44,21 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone3
       MapPublicIpOnLaunch: true
 
-  PrivateSubnet1a:
+  PrivateSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
       CidrBlock: '10.0.4.0/24'
       AvailabilityZone: !Ref AvailabilityZone1
 
-  PrivateSubnet1b:
+  PrivateSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
       CidrBlock: '10.0.5.0/24'
       AvailabilityZone: !Ref AvailabilityZone2
 
-  PrivateSubnet1c:
+  PrivateSubnet3:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VPC
@@ -78,6 +78,11 @@ Resources:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: Public Subnets
+      - Key: Network
+        Value: Public
 
   PublicRoute:
     Type: 'AWS::EC2::Route'
@@ -87,22 +92,22 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref InternetGateway
 
-  AssociatePublicSubnet1AWithRouteTable:
+  AssociatePublicSubnet1WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PublicSubnet1a
+      SubnetId: !Ref PublicSubnet1
       RouteTableId: !Ref PublicRouteTable
 
-  AssociatePublicSubnet1BWithRouteTable:
+  AssociatePublicSubnet2WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PublicSubnet1b
+      SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
 
-  AssociatePublicSubnet1CWithRouteTable:
+  AssociatePublicSubnet3WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PublicSubnet1c
+      SubnetId: !Ref PublicSubnet3
       RouteTableId: !Ref PublicRouteTable
 
   NatGatewayEIP:
@@ -110,10 +115,11 @@ Resources:
     Properties:
       Domain: vpc
 
+  # TODO add redundancy, i really dont get why NAT Gateway is not multi AZ
   NatGateway:
     Type: 'AWS::EC2::NatGateway'
     Properties:
-      SubnetId: !Ref PublicSubnet1a
+      SubnetId: !Ref PublicSubnet1
       AllocationId: !GetAtt NatGatewayEIP.AllocationId
 
   PrivateRouteTable:
@@ -129,22 +135,22 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       NatGatewayId: !Ref NatGateway
 
-  AssociatePrivateSubnet1AWithRouteTable:
+  AssociatePrivateSubnet1WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PrivateSubnet1a
+      SubnetId: !Ref PrivateSubnet1
       RouteTableId: !Ref PrivateRouteTable
 
-  AssociatePrivateSubnet1BWithRouteTable:
+  AssociatePrivateSubnet2WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PrivateSubnet1b
+      SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable
 
-  AssociatePrivateSubnet1CWithRouteTable:
+  AssociatePrivateSubnet3WithRouteTable:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      SubnetId: !Ref PrivateSubnet1c
+      SubnetId: !Ref PrivateSubnet3
       RouteTableId: !Ref PrivateRouteTable
 
 Outputs:
@@ -160,9 +166,9 @@ Outputs:
     Value:
       Fn::Join:
         - ','
-        - - !Ref PublicSubnet1a
-          - !Ref PublicSubnet1b
-          - !Ref PublicSubnet1c
+        - - !Ref PublicSubnet1
+          - !Ref PublicSubnet2
+          - !Ref PublicSubnet3
   PrivateSubnetIds:
     Description: IDs of the private subnets
     Export:
@@ -170,6 +176,6 @@ Outputs:
     Value:
       Fn::Join:
         - ','
-        - - !Ref PrivateSubnet1a
-          - !Ref PrivateSubnet1b
-          - !Ref PrivateSubnet1c
+        - - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+          - !Ref PrivateSubnet3
