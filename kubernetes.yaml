@@ -16,6 +16,9 @@ Resources:
     Type: 'AWS::EKS::Cluster'
     Properties:
       Name: !Sub '${AWS::StackName}-EKS'
+      KubernetesNetworkConfig:
+        IpFamily: ipv4
+      Version: '1.27'
       RoleArn: !GetAtt EKSClusterRole.Arn
       ResourcesVpcConfig:
         SecurityGroupIds:
@@ -24,7 +27,7 @@ Resources:
           Fn::Split:
             - ','
             - Fn::ImportValue:
-                !Sub '${VPCStackName}-PrivateSubnetIds'
+                !Sub '${VPCStackName}-SubnetIds'
 
   NodeGroup1:
     Type: 'AWS::EKS::Nodegroup'
@@ -69,6 +72,37 @@ Resources:
             Action: 'sts:AssumeRole'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSVPCResourceController
+
+  PolicyELBPermissions:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'ec2:DescribeAccountAttributes'
+              - 'ec2:DescribeAddresses'
+              - 'ec2:DescribeInternetGateways'
+            Effect: Allow
+            Resource: '*'
+        Version: 2012-10-17
+      PolicyName: !Sub '${AWS::StackName}-PolicyELBPermissions'
+      Roles:
+        - !Ref EKSClusterRole
+
+  PolicyCloudWatchMetrics:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'cloudwatch:PutMetricData'
+            Effect: Allow
+            Resource: '*'
+        Version: 2012-10-17
+      PolicyName: !Sub '${AWS::StackName}-PolicyCloudWatchMetrics'
+      Roles:
+        - !Ref EKSClusterRole
 
   EKSNodegroupRole:
     Type: 'AWS::IAM::Role'
@@ -84,3 +118,5 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
