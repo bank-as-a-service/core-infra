@@ -63,3 +63,22 @@ Resources:
         - CertificateArn:
             Fn::ImportValue:
               !Sub '${CertificateStackName}-CertificateArn'
+
+  IngressRecordSet:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName:
+        Fn::Join:
+            - ''
+            - - Fn::ImportValue: !Sub '${CertificateStackName}-CertificateDomain'
+              - '.'
+      Name:
+        Fn::Join:
+          - '.'
+          - - 'dev'
+            - Fn::ImportValue:
+                !Sub '${CertificateStackName}-CertificateDomain'
+      Type: AAAA
+      AliasTarget:
+        DNSName: !GetAtt IngressALB.DNSName
+        HostedZoneId: !GetAtt IngressALB.CanonicalHostedZoneID
