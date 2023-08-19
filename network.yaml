@@ -21,6 +21,9 @@ Resources:
       CidrBlock: '10.0.0.0/16'
       EnableDnsSupport: true
       EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-VPC'
 
   PublicSubnet1:
     Type: 'AWS::EC2::Subnet'
@@ -32,6 +35,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PublicSubnet1'
 
   PublicSubnet2:
     Type: 'AWS::EC2::Subnet'
@@ -43,6 +48,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PublicSubnet2'
 
   PublicSubnet3:
     Type: 'AWS::EC2::Subnet'
@@ -54,6 +61,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PublicSubnet3'
 
   PrivateSubnet1:
     Type: 'AWS::EC2::Subnet'
@@ -64,6 +73,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PrivateSubnet1'
 
   PrivateSubnet2:
     Type: 'AWS::EC2::Subnet'
@@ -74,6 +85,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PrivateSubnet2'
 
   PrivateSubnet3:
     Type: 'AWS::EC2::Subnet'
@@ -84,6 +97,8 @@ Resources:
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: 1
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-PrivateSubnet3'
 
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
