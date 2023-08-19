@@ -60,6 +60,13 @@ aws cloudformation update-stack \
 
 
 ## How to delete
+-- delete the ALB for ingress
+```shell
+aws cloudformation delete-stack \
+  --region us-west-2 \
+  --stack-name BankCoreIngressALB
+```
+
 - delete kubernetes layer
 ```shell
 aws cloudformation delete-stack \
