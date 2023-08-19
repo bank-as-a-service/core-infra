@@ -10,6 +10,15 @@ aws eks --region us-west-2 update-kubeconfig --name BankCoreCluster-EKS
 ```
 
 ## How to deploy
+- create the certificate for the ALB
+```shell
+aws cloudformation create-stack \
+  --region us-west-2 \
+  --stack-name BankCoreCertificate \
+  --template-body file://certificate.yaml \
+  --parameters ParameterKey=HostedZoneDomainName,ParameterValue=example.com ParameterKey=HostedZoneId,ParameterValue=ZXXXXXXXXXXXX
+```
+
 - create network layer
 ```shell
 aws cloudformation create-stack \

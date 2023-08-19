@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  HostedZoneDomainName:
+    Type: String
+    Description: Domain that we assume to be hosted in Route53
+    Default: example.com
+  HostedZoneId:
+    Type: String
+    Description: Hosted Zone ID
+    Default: Zxxxxxxxxxxxx
+  AlternativePrefixes:
+    Type: CommaDelimitedList
+    Description: Alternative prefixes for the domain
+    Default: www
+
+Outputs:
+  CertificateArn:
+    Description: Certificate ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-CertificateArn'
+    Value: !Ref MyCertificate
+  CertificateDomain:
+    Description: Certificate Domain
+    Export:
+      Name: !Sub '${AWS::StackName}-CertificateDomain'
+    Value: !Ref HostedZoneDomainName
+
+Resources:
+  MyCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: !Ref HostedZoneDomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref HostedZoneDomainName
+          HostedZoneId: !Ref HostedZoneId
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-Certificate'
