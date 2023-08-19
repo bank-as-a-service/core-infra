@@ -29,6 +29,15 @@ aws cloudformation create-stack \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 
+- create the ALB for ingress
+```shell
+aws cloudformation create-stack \
+  --region us-west-2 \
+  --stack-name BankCoreIngressALB \
+  --template-body file://alb.yaml \
+  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork
+```
+
 ## How to update
 - update network layer
 ```shell

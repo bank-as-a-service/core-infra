@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template for an Application Load Balancer
+
+Parameters:
+  VPCStackName:
+    Type: String
+    Description: Name of the VPC stack
+    Default: BankCoreNetwork
+
+Resources:
+  IngressALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub '${AWS::StackName}-IngressALB'
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue:
+              !Sub '${VPCStackName}-PublicSubnetIds'
+      SecurityGroups:
+        - !Ref IngressALBSecurityGroup
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '120'
+
+  IngressALBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: !Sub '${AWS::StackName} Ingress ALB Security Group'
+      VpcId:
+        Fn::ImportValue:
+          !Sub '${VPCStackName}-VPCId'
