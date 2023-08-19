@@ -6,6 +6,10 @@ Parameters:
     Type: String
     Description: Name of the VPC stack
     Default: BankCoreNetwork
+  CertificateStackName:
+    Type: String
+    Description: Name of the Certificate stack
+    Default: BankCoreCertificate
 
 Resources:
   IngressALB:
@@ -32,3 +36,21 @@ Resources:
       VpcId:
         Fn::ImportValue:
           !Sub '${VPCStackName}-VPCId'
+
+  IngressListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            StatusCode: '404'
+            ContentType: text/plain
+            MessageBody: "Page Not Found"
+      LoadBalancerArn:
+        Ref: IngressALB
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn:
+            Fn::ImportValue:
+              !Sub '${CertificateStackName}-CertificateArn'

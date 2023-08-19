@@ -44,7 +44,7 @@ aws cloudformation create-stack \
   --region us-west-2 \
   --stack-name BankCoreIngressALB \
   --template-body file://alb.yaml \
-  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork
+  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork ParameterKey=CertificateStackName,ParameterValue=BankCoreCertificate
 ```
 
 ## How to update
@@ -56,6 +56,7 @@ aws cloudformation update-stack \
   --template-body file://network.yaml \
   --parameters ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a ParameterKey=AvailabilityZone2,ParameterValue=us-west-2b ParameterKey=AvailabilityZone3,ParameterValue=us-west-2c
 ```
+
 - update kubernetes layer
 ```shell
 aws cloudformation update-stack \
@@ -67,6 +68,14 @@ aws cloudformation update-stack \
   --disable-rollback
 ```
 
+- update the ALB for ingress
+```shell
+aws cloudformation update-stack \
+  --region us-west-2 \
+  --stack-name BankCoreIngressALB \
+  --template-body file://alb.yaml \
+  --parameters ParameterKey=VPCStackName,ParameterValue=BankCoreNetwork ParameterKey=CertificateStackName,ParameterValue=BankCoreCertificate
+```
 
 ## How to delete
 -- delete the ALB for ingress
