@@ -16,7 +16,7 @@ aws cloudformation create-stack \
   --region us-west-2 \
   --stack-name BankCoreCertificate \
   --template-body file://certificate.yaml \
-  --parameters ParameterKey=HostedZoneDomainName,ParameterValue=example.com ParameterKey=HostedZoneId,ParameterValue=ZXXXXXXXXXXXX
+  --parameters ParameterKey=DomainName,ParameterValue=example.com ParameterKey=HostedZoneId,ParameterValue=ZXXXXXXXXXXXX
 ```
 
 - create network layer
