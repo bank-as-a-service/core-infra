@@ -75,7 +75,7 @@ Resources:
       Name:
         Fn::Join:
           - '.'
-          - - 'dev'
+          - - 'ping.dev'
             - Fn::ImportValue:
                 !Sub '${CertificateStackName}-CertificateDomain'
       Type: A
