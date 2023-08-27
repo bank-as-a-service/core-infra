@@ -95,3 +95,13 @@ Resources:
       AliasTarget:
         DNSName: !GetAtt IngressALB.DNSName
         HostedZoneId: !GetAtt IngressALB.CanonicalHostedZoneID
+
+# Everything below has something to do with connecting this ALB
+# with the EKS cluster
+
+  EKSTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      VpcId: !ImportValue '${VPCStackName}-VPCId'
