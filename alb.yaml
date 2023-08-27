@@ -11,6 +11,13 @@ Parameters:
     Description: Name of the Certificate stack
     Default: BankCoreCertificate
 
+Outputs:
+  EKSIngressTargetGroupArn:
+    Description: Ingress TargetGroup ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-EKSIngressTargetGroupArn'
+    Value: !Ref EKSIngressTargetGroup
+
 Resources:
   IngressALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -96,7 +103,7 @@ Resources:
 # Everything below has something to do with connecting this ALB
 # with the EKS cluster
 
-  EKSTargetGroup:
+  EKSIngressTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Port: 80
