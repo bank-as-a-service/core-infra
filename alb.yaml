@@ -21,8 +21,7 @@ Resources:
       Subnets:
         Fn::Split:
           - ','
-          - Fn::ImportValue:
-              !Sub '${VPCStackName}-PublicSubnetIds'
+          - Fn::ImportValue: !Sub '${VPCStackName}-PublicSubnetIds'
       SecurityGroups:
         - !Ref IngressALBSecurityGroup
       LoadBalancerAttributes:
@@ -61,8 +60,7 @@ Resources:
       Protocol: HTTPS
       Certificates:
         - CertificateArn:
-            Fn::ImportValue:
-              !Sub '${CertificateStackName}-CertificateArn'
+            Fn::ImportValue: !Sub '${CertificateStackName}-CertificateArn'
 
   IngressHTTPListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -89,8 +87,7 @@ Resources:
         Fn::Join:
           - '.'
           - - 'ping.dev'
-            - Fn::ImportValue:
-                !Sub '${CertificateStackName}-CertificateDomain'
+            - Fn::ImportValue: !Sub '${CertificateStackName}-CertificateDomain'
       Type: A
       AliasTarget:
         DNSName: !GetAtt IngressALB.DNSName
@@ -104,4 +101,5 @@ Resources:
     Properties:
       Port: 80
       Protocol: HTTP
-      VpcId: !ImportValue '${VPCStackName}-VPCId'
+      VpcId:
+        Fn::ImportValue: !Sub '${VPCStackName}-VPCId'
