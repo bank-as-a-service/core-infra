@@ -95,6 +95,3 @@ Resources:
       AliasTarget:
         DNSName: !GetAtt IngressALB.DNSName
         HostedZoneId: !GetAtt IngressALB.CanonicalHostedZoneID
-# TODO
-# - Add listener for 80
-# - dualstack
