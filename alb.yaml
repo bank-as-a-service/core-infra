@@ -110,3 +110,37 @@ Resources:
       Protocol: HTTP
       VpcId:
         Fn::ImportValue: !Sub '${VPCStackName}-VPCId'
+
+  EKSIngressListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref EKSIngressTargetGroup
+      Conditions:
+        - Field: host-header
+          Values:
+            - Fn::Join:
+                - '.'
+                - - 'app.dev'
+                  - Fn::ImportValue: !Sub '${CertificateStackName}-CertificateDomain'
+      ListenerArn: !Ref IngressListener
+      Priority: 1
+
+  EKSIngressRecordSet:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName:
+        Fn::Join:
+          - ''
+          - - Fn::ImportValue: !Sub '${CertificateStackName}-CertificateDomain'
+            - '.'
+      Name:
+        Fn::Join:
+          - '.'
+          - - 'app.dev'
+            - Fn::ImportValue: !Sub '${CertificateStackName}-CertificateDomain'
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt IngressALB.DNSName
+        HostedZoneId: !GetAtt IngressALB.CanonicalHostedZoneID
