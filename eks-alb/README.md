@@ -23,13 +23,13 @@ cat >load-balancer-role-trust-policy.json <<EOF
         {
             "Effect": "Allow",
             "Principal": {
-                "Federated": "arn:aws:iam::111122223333:oidc-provider/oidc.eks.region-code.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE"
+                "Federated": "arn:aws:iam::<AWS_ACCOUNT_ID>:oidc-provider/oidc.eks.region-code.amazonaws.com/id/<OPEN_ID_CONNECT_ID>"
             },
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringEquals": {
-                    "oidc.eks.region-code.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE:aud": "sts.amazonaws.com",
-                    "oidc.eks.region-code.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                    "oidc.eks.region-code.amazonaws.com/id/<OPEN_ID_CONNECT_ID>:aud": "sts.amazonaws.com",
+                    "oidc.eks.region-code.amazonaws.com/id/<OPEN_ID_CONNECT_ID>:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
                 }
             }
         }
@@ -42,4 +42,11 @@ cat >load-balancer-role-trust-policy.json <<EOF
 aws iam create-role \
   --role-name AmazonEKSLoadBalancerControllerRole \
   --assume-role-policy-document file://load-balancer-role-trust-policy.json
+```
+
+4. attach the policy to the role
+```shell
+aws iam attach-role-policy \
+  --policy-arn arn:aws:iam::<AWS_ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --role-name AmazonEKSLoadBalancerControllerRole
 ```
